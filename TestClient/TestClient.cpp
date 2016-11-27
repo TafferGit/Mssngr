@@ -18,6 +18,7 @@
 
 int __cdecl main(int argc, char **argv)
 {
+	printf("Hey!\n");
 	WSADATA wsaData;
 	SOCKET ConnectSocket = INVALID_SOCKET;
 	struct addrinfo *result = NULL,
