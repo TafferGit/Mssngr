@@ -146,7 +146,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Connection.cpp" />
     <ClCompile Include="TestClient.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Connection.h" />
+    <ClInclude Include="TestClient.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
