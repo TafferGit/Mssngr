@@ -8,12 +8,12 @@ Connection::Connection(int argc, char **argv)
 	SendBuffer();
 	ShutDownConnection();
 	WaitForReceive();
-	ConnectionCleanUp();
 }
 
 
 Connection::~Connection()
 {
+	ConnectionCleanUp();
 }
 
 
