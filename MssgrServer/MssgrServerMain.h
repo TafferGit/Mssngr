@@ -4,6 +4,7 @@
 #undef UNICODE
 
 #define WIN32_LEAN_AND_MEAN
+#define CONNECTION_ATTEMPT 1
 
 #include <Windows.h>
 #include <WinSock2.h>

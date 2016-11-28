@@ -19,8 +19,8 @@ Connection::~Connection()
 
 int Connection::InitializeWinSockConnection(int argc, char **argv) 
 {
-	sendbuf = "this is test!";
-
+	sendbuf = new char[sizeof(int)];
+	sprintf(sendbuf, "%ld", CONNECTION_ATTEMPT);
 	// Validate the parameters
 	if (argc != 2)
 	{
@@ -40,6 +40,8 @@ int Connection::InitializeWinSockConnection(int argc, char **argv)
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_protocol = IPPROTO_TCP;
+
+	return 0;
 }
 
 int Connection::ResolveAddressAndPort(char ** argv)
@@ -97,19 +99,17 @@ int Connection::ConnectToAddress()
 int Connection::SendBuffer()
 {
 	// Send an initial buffer
-	while (1) 
+	iResult = send(ConnectSocket, sendbuf, sizeof(uint32_t), 0);
+	if (iResult == SOCKET_ERROR) 
 	{
-		iResult = send(ConnectSocket, sendbuf, (int)strlen(sendbuf), 0);
-		if (iResult == SOCKET_ERROR) 
-		{
-			printf("send failed with error: %d\n", WSAGetLastError());
-			closesocket(ConnectSocket);
-			WSACleanup();
-			return 1;
-		}
-
-		printf("Bytes Sent: %ld\n", iResult);
+		printf("send failed with error: %d\n", WSAGetLastError());
+		closesocket(ConnectSocket);
+		WSACleanup();
+		return 1;
 	}
+
+	printf("Bytes Sent: %ld\n", iResult);
+	system("pause");
 
 	return 0;
 }

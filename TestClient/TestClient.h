@@ -2,12 +2,17 @@
 #ifndef TEST_CLIENT_H
 #define TEST_CLIENT_H
 #define WIN32_LEAN_AND_MEAN
+#define _CRT_SECURE_NO_WARNINGS
+#define CONNECTION_ATTEMPT 1
+#define REGISTRAGION_ATTEMPT 2
 
 #include <windows.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdint.h>
+#include <string>
 #include <process.h>
 #include <thread>
 

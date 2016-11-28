@@ -14,6 +14,7 @@ private:
 
 	int iSendResult;
 	char recvbuf[DEFAULT_BUFLEN];
+	char * dynamicBuf = NULL;
 	int recvbuflen = DEFAULT_BUFLEN;
 
 	int InitializeWinsock();

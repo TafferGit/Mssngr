@@ -10,6 +10,7 @@ int ServerSocket::InitializeWinsock()
 	if (iResult != 0) 
 	{
 		printf("WSAStratup failed with error: %d\n", iResult);
+		system("pause");
 		return 1;
 	}
 
@@ -24,11 +25,15 @@ int ServerSocket::InitializeWinsock()
 	if (iResult != 0)
 	{
 		printf("getaddrinfo failed with error %d\n", iResult);
+		system("pause");
 		WSACleanup();
 		return 1;
 	}
 
 	CreateSocket();
+	Listen();
+	OnReceive();
+
 	return 0;
 }
 
@@ -39,12 +44,14 @@ int ServerSocket::CreateSocket()
 	if (ListenSocket == INVALID_SOCKET)
 	{
 		printf("Socket failed with error %ld\n", WSAGetLastError());
+		system("pause");
 		freeaddrinfo(result);
 		WSACleanup();
 		return 1;
 	}
 
 	BindSocket();
+
 	return 0;
 }
 
@@ -58,26 +65,28 @@ int ServerSocket::BindSocket()
 		freeaddrinfo(result);
 		closesocket(ListenSocket);
 		WSACleanup();
+		system("pause");
 		return 1;
 	}
 
-	freeaddrinfo(result);
-
-	Listen();
 	return 0;
 }
 
 int ServerSocket::Listen()
 {
+	freeaddrinfo(result);
+
 	iResult = listen(ListenSocket, SOMAXCONN);
 	if (iResult == SOCKET_ERROR)
 	{
 		printf("listen failed with error: %d\n", WSAGetLastError());
 		closesocket(ListenSocket);
 		WSACleanup();
+		system("pause");
 		return 1;
 	}
 
+	Accept();
 	return 0;
 }
 
@@ -90,12 +99,12 @@ int ServerSocket::Accept()
 		printf("accept failed with error: %d\n", WSAGetLastError());
 		closesocket(ListenSocket);
 		WSACleanup();
+		system("pause");
 		return 1;
 	}
 
 	//No longer need server socket
 	closesocket(ListenSocket);
-	Accept();
 
 	return 0;
 }
@@ -108,7 +117,19 @@ int ServerSocket::OnReceive()
 		iResult = recv(ClientSocket, recvbuf, recvbuflen, 0);
 		if (iResult > 0) 
 		{
-			printf("Bytes received: %d\n", iResult);
+			dynamicBuf = new char[iResult];
+			for (int i = 0; i < iResult; i++)
+			{
+				dynamicBuf[i] = recvbuf[i];
+			}
+
+			int code = atoi(dynamicBuf);
+
+			if (code == CONNECTION_ATTEMPT)
+			{
+				printf("CONNECTION ATTEMPT!\n");
+				system("pause");
+			}
 
 			//Echo the buffer back to the sender
 			iSendResult = send(ClientSocket, recvbuf, iResult, 0);
@@ -117,6 +138,7 @@ int ServerSocket::OnReceive()
 				printf("send failed with error: %d\n", WSAGetLastError());
 				closesocket(ClientSocket);
 				WSACleanup();
+				system("pause");
 				return 1;
 			}
 			printf("Bytes sent: %d\n", iSendResult);
