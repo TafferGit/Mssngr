@@ -1,8 +1,10 @@
-#include "Connection.h"
+#include "TestClient.h"
 
 Connection::Connection(int argc, char **argv)
 {
-	InitializeWinSockConnection(argc, argv);
+	int result;
+
+	result = InitializeWinSockConnection(argc, argv);
 	ResolveAddressAndPort(argv);
 	ConnectToAddress();
 	SendBuffer();
@@ -20,7 +22,8 @@ Connection::~Connection()
 int Connection::InitializeWinSockConnection(int argc, char **argv) 
 {
 	sendbuf = new char[sizeof(int)];
-	sprintf(sendbuf, "%ld", CONNECTION_ATTEMPT);
+	sprintf(sendbuf, "%ld", LOGIN_REQUEST);
+
 	// Validate the parameters
 	if (argc != 2)
 	{

@@ -1,8 +1,17 @@
-#include "ServerSocket.h"
+#include "MssgrServerMain.h"
 
 int __cdecl main()
 {
-	ServerSocket * serverSocket = new ServerSocket;
-	delete serverSocket;
+	MssgrServer * msgSrv = new MssgrServer;
 	return 0;
+}
+
+MssgrServer::MssgrServer()
+{
+	sock = new ServerSocket;
+}
+
+MssgrServer::~MssgrServer()
+{
+	delete sock;
 }

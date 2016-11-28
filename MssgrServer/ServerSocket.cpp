@@ -1,6 +1,4 @@
-#include "MssgrServerMain.h"
 #include "ServerSocket.h"
-
 
 
 int ServerSocket::InitializeWinsock()
@@ -125,7 +123,7 @@ int ServerSocket::OnReceive()
 
 			int code = atoi(dynamicBuf);
 
-			if (code == CONNECTION_ATTEMPT)
+			if (code == LOGIN_REQUEST)
 			{
 				printf("CONNECTION ATTEMPT!\n");
 				system("pause");

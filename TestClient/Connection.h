@@ -1,5 +1,27 @@
 #pragma once
-#include "TestClient.h"
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <stdint.h>
+#include <string>
+#include <process.h>
+#include <thread>
+#include <iostream>
+
+// Need to link with Ws2_32.lib, Mswsock.lib, and Advapi32.lib
+#pragma comment (lib, "Ws2_32.lib")
+#pragma comment (lib, "Mswsock.lib")
+#pragma comment (lib, "AdvApi32.lib")
+
+//Codes
+#define LOGIN_REQUEST 1
+#define REGISTRATION_REQUEST 2
+#define CONTACT_LIST_REQUEST 3
+#define SEND_MESSAGE_REQUEST 4
+
+#define DEFAULT_BUFLEN 512
+#define DEFAULT_PORT "80"
 
 class Connection
 {
