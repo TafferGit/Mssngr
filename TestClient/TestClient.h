@@ -2,9 +2,6 @@
 #ifndef TEST_CLIENT_H
 #define TEST_CLIENT_H
 #define WIN32_LEAN_AND_MEAN
-#define _CRT_SECURE_NO_WARNINGS
-
-
 
 #include <windows.h>
 
@@ -18,7 +15,7 @@
 #include <iostream>
 
 #include "Connection.h"
-#include "LoginMenu.h"
+#include "User.h"
 
 
 
@@ -26,7 +23,7 @@ class TestClient
 {
 private:
 	Connection * c = NULL;
-	LoginMenu * lm = NULL;
+	User * user = NULL;
 public:
 	TestClient(int argc, char **argv);
 	~TestClient();

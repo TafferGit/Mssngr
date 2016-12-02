@@ -87,7 +87,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
@@ -146,14 +146,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ClientFile.cpp" />
+    <ClCompile Include="ClientUserDataFile.cpp" />
     <ClCompile Include="Connection.cpp" />
-    <ClCompile Include="LoginMenu.cpp" />
+    <ClCompile Include="RegistrationForm.cpp" />
     <ClCompile Include="TestClient.cpp" />
+    <ClCompile Include="User.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ClientFile.h" />
+    <ClInclude Include="ClientUserDataFile.h" />
     <ClInclude Include="Connection.h" />
-    <ClInclude Include="LoginMenu.h" />
+    <ClInclude Include="RegistrationForm.h" />
     <ClInclude Include="TestClient.h" />
+    <ClInclude Include="User.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

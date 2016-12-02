@@ -8,12 +8,12 @@ int __cdecl main(int argc, char **argv)
 
 TestClient::TestClient(int argc, char ** argv)
 {
-	lm = new LoginMenu();
-	c = new Connection(argc, argv);
+	//c = new Connection(argc, argv);
+	user = new User();
+	user->Register();
 }
 
 TestClient::~TestClient()
 {
-	delete lm;
-	delete c;
+	//delete c;
 }
