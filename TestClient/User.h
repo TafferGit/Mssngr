@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "RegistrationForm.h"
+#include "LoginForm.h"
 
 class User
 {
@@ -12,5 +13,6 @@ public:
 	User();
 	~User();
 	void Register(void);
+	void Login(void);
 };
 

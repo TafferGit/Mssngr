@@ -22,3 +22,17 @@ int ClientUserDataFile::SaveAccountDataToFile(std::string login, std::string pas
 		return 1;
 	}
 }
+
+std::string ClientUserDataFile::LoadAccountData()
+{
+	std::string data;
+	fileStream.open("users.mcf", std::ios::in);
+	fileStream.seekg(0, std::ios::end);
+	data.reserve(fileStream.tellg());
+	fileStream.seekg(0, std::ios::beg);
+
+	data.assign((std::istreambuf_iterator<char>(fileStream)),
+		std::istreambuf_iterator<char>());
+
+	return data;
+}
