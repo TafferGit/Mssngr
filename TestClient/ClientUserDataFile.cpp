@@ -21,7 +21,6 @@ int ClientUserDataFile::SaveAccountDataToFile(std::string login, std::string pas
 	}
 
 	else {
-		size_t errlen = strerrorlen_s
 		std::cerr << "Error: " << strerror(errno);
 		return 1;
 	}
