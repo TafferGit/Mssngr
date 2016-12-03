@@ -10,7 +10,7 @@ class LoginForm
 private:
 	std::string *enteredUsername = NULL;
 	std::string *enteredPassword = NULL;
-	std::string accountsData;
+	ClientUserDataFileInfo accountsDatafileInfo;
 	std::string loadedUsername;
 	std::string loadedPassword;
 public:

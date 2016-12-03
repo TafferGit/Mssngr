@@ -14,7 +14,7 @@ ClientUserDataFile::~ClientUserDataFile()
 
 int ClientUserDataFile::SaveAccountDataToFile(std::string login, std::string password)
 {
-	fileStream.open("users.mcf", std::fstream::out);
+	fileStream.open("users.mcf", std::fstream::out | std::fstream::app);
 	if (!fileStream.fail()) {
 		fileStream << "!login!" << login << "!password!" << password << "\n";
 		fileStream.close();
@@ -26,16 +26,17 @@ int ClientUserDataFile::SaveAccountDataToFile(std::string login, std::string pas
 	}
 }
 
-std::string ClientUserDataFile::LoadAccountData()
+ClientUserDataFileInfo ClientUserDataFile::LoadAccountData()
 {
-	std::string data;
+	ClientUserDataFileInfo currentFileInfo;
 	fileStream.open("users.mcf", std::ios::in);
 	fileStream.seekg(0, std::ios::end);
-	data.reserve(fileStream.tellg());
+ 	currentFileInfo.data.reserve(fileStream.tellg());
+	currentFileInfo.fileSize = fileStream.tellg();
 	fileStream.seekg(0, std::ios::beg);
 
-	data.assign((std::istreambuf_iterator<char>(fileStream)),
+	currentFileInfo.data.assign((std::istreambuf_iterator<char>(fileStream)),
 		std::istreambuf_iterator<char>());
 
-	return data;
+	return currentFileInfo;
 }
