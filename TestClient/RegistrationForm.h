@@ -7,10 +7,13 @@ class RegistrationForm
 {
 	std::string *username = NULL;
 	std::string *password = NULL;
+	ClientUserDataFileInfo accountsDataFileInfo;
+	std::string loadedUsername;
 public:
 	RegistrationForm(std::string *_username, std::string * _password);
 	~RegistrationForm();
 	void ShowForm();
+	int Check();
 	int SaveToFile();
 };
 

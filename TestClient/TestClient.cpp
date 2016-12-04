@@ -11,7 +11,7 @@ TestClient::TestClient(int argc, char ** argv)
 {
 	//c = new Connection(argc, argv);
 	user = new User();
-	//user->Register();
+	user->Register();
 	user->Login();
 }
 
