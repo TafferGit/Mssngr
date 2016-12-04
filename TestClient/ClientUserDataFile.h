@@ -15,5 +15,5 @@ public:
 	ClientUserDataFile();
 	~ClientUserDataFile();
 	int SaveAccountDataToFile(std::string login, std::string password);
-	ClientUserDataFileInfo LoadAccountData();
+	int LoadAccountData(ClientUserDataFileInfo * fileInfo);
 };

@@ -27,9 +27,12 @@ void User::Login(void)
 		std::cout << "Login and password are correct!\n";
 	}
 	else if (loginResult == 1) {
-		std::cout << "There were problems checking your login and password!\n";
+		std::cout << "Incorrect login and/or password!\n";
 	}
 	else if (loginResult == 2) {
 		std::cout << "Incorrect login and/or password!\n";
+	}
+	else if (loginResult == 3) {
+		std::cout << "Users.mcf file was not found!\n";
 	}
 }
