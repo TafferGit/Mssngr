@@ -32,7 +32,7 @@ int ClientUserDataFile::LoadAccountData(ClientUserDataFileInfo * fileInfo)
 	fileStream.open("users.mcf", std::ios::in);
 	if (fileStream.fail()) {
 		std::cerr << "Error: " << strerror(errno) << "\n";
-		return 1;
+		return MCF_FILE_NOT_FOUND ;
 	}
 
 	else {
@@ -47,6 +47,10 @@ int ClientUserDataFile::LoadAccountData(ClientUserDataFileInfo * fileInfo)
 
 		*fileInfo = currentFileInfo;
 
-		return 0;
+		if (currentFileInfo.data != "") {
+			if (currentFileInfo.data.at(0) != '!') { return MCF_FILE_INVALID_FORMAT; }
+			return MCF_FILE_OK;
+		}
+		else return MCF_FILE_EMPTY;
 	}
 }
