@@ -5,6 +5,11 @@
 
 #include "ClientUserDataFile.h"
 
+#define LOGIN_OK 4
+#define LOGIN_IN_USE 5
+#define LOGIN_CHECK_PROBLEMS 6
+#define LOGIN_OR_PASSWORD_INCORRECT 7
+
 class LoginForm
 {
 private:

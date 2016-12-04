@@ -119,9 +119,10 @@ int RegistrationForm::CheckMCFFile()
 				}
 
 				//Else if we reached the end of the file and haven't found any matches we return 0 which means login is free to use
-				else if (foundEndline >= accountsDataFileInfo.fileSize)
+				else if (foundEndline >= accountsDataFileInfo.fileSize) {
 					loadedUsername.clear();
 					return LOGIN_OK;
+				}
 			}
 
 			//Something went terribly wrong if we got here...
