@@ -6,6 +6,7 @@
 #include <string>
 #include <iostream>
 #include <clocale>
+#include <assert.h>
 
 //libevent
 #include <event2\event.h>

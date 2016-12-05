@@ -22,7 +22,7 @@ Connection::~Connection()
 int Connection::InitializeWinSockConnection(int argc, char **argv) 
 {
 	sendbuf = new char[DEFAULT_BUFLEN];
-	sprintf(sendbuf, "%s", "Hello stranger!");
+	sprintf(sendbuf, "%s", "Hello stranger!\n");
 
 	// Validate the parameters
 	if (argc != 2)
@@ -40,7 +40,7 @@ int Connection::InitializeWinSockConnection(int argc, char **argv)
 	}
 
 	ZeroMemory(&hints, sizeof(hints));
-	hints.ai_family = AF_UNSPEC;
+	hints.ai_family = AF_INET;
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_protocol = IPPROTO_TCP;
 
@@ -102,7 +102,7 @@ int Connection::ConnectToAddress()
 int Connection::SendBuffer()
 {
 	// Send an initial buffer
-	iResult = send(ConnectSocket, sendbuf, sizeof(sendbuf), 0);
+	iResult = send(ConnectSocket, sendbuf, DEFAULT_BUFLEN, 0);
 	if (iResult == SOCKET_ERROR) 
 	{
 		printf("send failed with error: %d\n", WSAGetLastError());
