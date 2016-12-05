@@ -14,5 +14,6 @@ public:
 	~User();
 	void Register(void);
 	void Login(void);
+	std::string GetLogin();
 };
 

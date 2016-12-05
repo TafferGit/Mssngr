@@ -23,3 +23,8 @@ void User::Login(void)
 	lf->ShowForm();
 	delete lf;
 }
+
+std::string User::GetLogin()
+{
+	return this->login;
+}

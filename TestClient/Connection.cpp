@@ -21,8 +21,8 @@ Connection::~Connection()
 
 int Connection::InitializeWinSockConnection(int argc, char **argv) 
 {
-	sendbuf = new char[sizeof(int)];
-	sprintf(sendbuf, "%ld", LOGIN_REQUEST);
+	sendbuf = new char[DEFAULT_BUFLEN];
+	sprintf(sendbuf, "%s", "Hello stranger!");
 
 	// Validate the parameters
 	if (argc != 2)
@@ -102,7 +102,7 @@ int Connection::ConnectToAddress()
 int Connection::SendBuffer()
 {
 	// Send an initial buffer
-	iResult = send(ConnectSocket, sendbuf, sizeof(uint32_t), 0);
+	iResult = send(ConnectSocket, sendbuf, sizeof(sendbuf), 0);
 	if (iResult == SOCKET_ERROR) 
 	{
 		printf("send failed with error: %d\n", WSAGetLastError());
@@ -112,7 +112,6 @@ int Connection::SendBuffer()
 	}
 
 	printf("Bytes Sent: %ld\n", iResult);
-	system("pause");
 
 	return 0;
 }
@@ -128,9 +127,7 @@ void Connection::WaitForReceive()
 			printf("Connection closed\n");
 		else
 			printf("recv failed with error: %d\n", WSAGetLastError());
-
 	} while (iResult > 0);
-
 }
 
 void Connection::ConnectionCleanUp()

@@ -9,7 +9,8 @@ int __cdecl main(int argc, char **argv)
 
 TestClient::TestClient(int argc, char ** argv)
 {
-	//c = new Connection(argc, argv);
+	c = new Connection(argc, argv);
+
 	user = new User();
 	user->Register();
 	user->Login();
@@ -17,5 +18,5 @@ TestClient::TestClient(int argc, char ** argv)
 
 TestClient::~TestClient()
 {
-	//delete c;
+	delete c;
 }
