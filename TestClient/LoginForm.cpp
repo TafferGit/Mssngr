@@ -25,16 +25,7 @@ void LoginForm::ShowForm()
 	std::cin >> *enteredPassword;
 
 	loginResult = Check();
-
-	if (loginResult == LOGIN_OK) {
-		std::cout << "Login and password are correct!\n";
-	}
-	else if (loginResult == LOGIN_OR_PASSWORD_INCORRECT) {
-		std::cout << "Incorrect login and/or password!\n";
-	}
-	else if (loginResult == LOGIN_CHECK_PROBLEMS) {
-		std::cout << "Some problems occured when checking login and password!\n";
-	}
+	CheckReturnedCodes(loginResult);
 }
 
 int LoginForm::Check()
@@ -43,7 +34,7 @@ int LoginForm::Check()
 	std::size_t foundLogin(0), foundPassword(0), foundEndline(0);
 	ClientUserDataFile *clientFile = new ClientUserDataFile();
 
-	result = clientFile->LoadAccountData(&accountsDatafileInfo);
+	result = clientFile->LoadAccountData(&accountsDatafileInfo); //Loading account data from users.mcf
 
 	if (result == MCF_FILE_OK) {
 		/*Iterate through loaded account data to find if any of usernames and passwords in users.mcf match
@@ -65,25 +56,17 @@ int LoginForm::Check()
 					loadedPassword += accountsDatafileInfo.data.at(j);
 				}
 
-				//If we find a match - we return 0 which means that username and password entered by user are correct
+				//If we find a match - we return LOGIN_OK which means that username and password entered by user are correct
 				if (enteredPassword->compare(loadedPassword) == 0 && enteredUsername->compare(loadedUsername) == 0) {
 					return LOGIN_OK;
 				}
-				else { loadedUsername.clear(); loadedPassword.clear(); }
+				else { loadedUsername.clear(); loadedPassword.clear(); } //Clear variables and iterate further
 			}
 
+			//If we've reached file's end and hadn't found any mathches we tell that login or password or both are incorrect
 			else if (foundEndline >= accountsDatafileInfo.fileSize)
 				return LOGIN_OR_PASSWORD_INCORRECT;
 		}
-
-
-		//Haven't found any matches. Returning 1.
-		return 1;
-	}
-
-	else if (result == MCF_FILE_EMPTY) {
-		std::cout << "Users.mcf file is empty!\n";
-		return LOGIN_CHECK_PROBLEMS;
 	}
 
 	else if (result == MCF_FILE_NOT_FOUND) {
@@ -91,5 +74,25 @@ int LoginForm::Check()
 		return LOGIN_CHECK_PROBLEMS;
 	}
 
-	else return 4; //Unlikely but...
+	else if (result == MCF_FILE_EMPTY) {
+		std::cout << "Users.mcf file is empty!\n";
+		return LOGIN_CHECK_PROBLEMS;
+	}
+
+	return 4; //Unlikely result, something must go terribly wrong...
+}
+
+void LoginForm::CheckReturnedCodes(int loginResult) {
+
+	if (loginResult == LOGIN_OK) {
+		std::cout << "Login and password are correct!\n";
+		/*Go to the next part. Presumably, requesting contact list from the server*/
+	}
+	else if (loginResult == LOGIN_OR_PASSWORD_INCORRECT) {
+		std::cout << "Incorrect login and/or password!\n";
+		ShowForm(); //Just showing the form again for user to reenter login and password
+	}
+	else if (loginResult == LOGIN_CHECK_PROBLEMS) {
+		std::cout << "Some problems occured when checking login and password!\n"; //That's enough for client-side
+	}
 }

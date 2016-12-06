@@ -14,12 +14,6 @@
 #pragma comment (lib, "Mswsock.lib")
 #pragma comment (lib, "AdvApi32.lib")
 
-//Codes
-#define LOGIN_REQUEST 1
-#define REGISTRATION_REQUEST 2
-#define CONTACT_LIST_REQUEST 3
-#define SEND_MESSAGE_REQUEST 4
-
 #define DEFAULT_BUFLEN 512
 #define DEFAULT_PORT "80"
 
@@ -45,7 +39,7 @@ private:
 public:
 	Connection(int argc, char **argv);
 	~Connection();
-	int InitializeWinSockConnection(int argc, char **argv);
+	int InitializeWinSocket(int argc, char **argv);
 };
 
 

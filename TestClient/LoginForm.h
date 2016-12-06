@@ -18,6 +18,7 @@ private:
 	ClientUserDataFileInfo accountsDatafileInfo;
 	std::string loadedUsername;
 	std::string loadedPassword;
+	void CheckReturnedCodes(int loginResult);
 public:
 	LoginForm();
 	~LoginForm();

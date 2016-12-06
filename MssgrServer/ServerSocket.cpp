@@ -123,12 +123,6 @@ int ServerSocket::OnReceive()
 
 			int code = atoi(dynamicBuf);
 
-			if (code == LOGIN_REQUEST)
-			{
-				printf("CONNECTION ATTEMPT!\n");
-				system("pause");
-			}
-
 			//Echo the buffer back to the sender
 			iSendResult = send(ClientSocket, recvbuf, iResult, 0);
 			if (iSendResult == SOCKET_ERROR) 

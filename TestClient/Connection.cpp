@@ -4,7 +4,7 @@ Connection::Connection(int argc, char **argv)
 {
 	int result;
 
-	result = InitializeWinSockConnection(argc, argv);
+	result = InitializeWinSocket(argc, argv);
 	ResolveAddressAndPort(argv);
 	ConnectToAddress();
 	SendBuffer();
@@ -19,7 +19,7 @@ Connection::~Connection()
 }
 
 
-int Connection::InitializeWinSockConnection(int argc, char **argv) 
+int Connection::InitializeWinSocket(int argc, char **argv) 
 {
 	sendbuf = new char[DEFAULT_BUFLEN];
 	sprintf(sendbuf, "%s", "Hello stranger!\n");
