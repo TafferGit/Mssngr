@@ -62,7 +62,7 @@ int __cdecl main()
 	sockIn.sin_port = htons(port);
 
 	//Creating libevent listener for the above created socket
-	listener = evconnlistener_new_bind(base, accept_connection_cb, NULL, (LEV_OPT_CLOSE_ON_FREE | LEV_OPT_REUSEABLE), -1, (SOCKADDR*)&sockIn, sizeof(sockIn));
+	listener = evconnlistener_new_bind(base, accept_connection_cb, NULL, LEV_OPT_REUSEABLE, -1, (SOCKADDR*)&sockIn, sizeof(sockIn));
 
 	if (!listener) {
 		perror("Error creating evconnlistener object");

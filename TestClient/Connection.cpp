@@ -7,9 +7,12 @@ Connection::Connection(int argc, char **argv)
 	result = InitializeWinSocket(argc, argv);
 	ResolveAddressAndPort(argv);
 	ConnectToAddress();
-	SendBuffer();
-	ShutDownConnection();
-	WaitForReceive();
+	while (1) {
+		SendBuffer();
+		//ShutDownConnection();
+		WaitForReceive();
+		Sleep(5000);
+	}
 }
 
 
@@ -103,6 +106,7 @@ int Connection::SendBuffer()
 {
 	// Send an initial buffer
 	iResult = send(ConnectSocket, sendbuf, DEFAULT_BUFLEN, 0);
+	Sleep(5000);
 	if (iResult == SOCKET_ERROR) 
 	{
 		printf("send failed with error: %d\n", WSAGetLastError());
@@ -119,7 +123,7 @@ int Connection::SendBuffer()
 void Connection::WaitForReceive()
 {
 	// Receive until the peer closes the connection
-	do {
+	//do {
 		iResult = recv(ConnectSocket, recvbuf, recvbuflen, 0);
 		if (iResult > 0)
 			printf("Bytes received: %d\n", iResult);
@@ -127,7 +131,7 @@ void Connection::WaitForReceive()
 			printf("Connection closed\n");
 		else
 			printf("recv failed with error: %d\n", WSAGetLastError());
-	} while (iResult > 0);
+	//} while (1);
 }
 
 void Connection::ConnectionCleanUp()

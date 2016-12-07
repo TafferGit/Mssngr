@@ -18,6 +18,7 @@ void LoginForm::ShowForm()
 {
 	int loginResult; //Variable to store login result return value
 
+	system("cls");
 	std::cout << "Complete the login procedure.\n";
 	std::cout << "Please enter your login: ";
 	std::cin >> *enteredUsername;
