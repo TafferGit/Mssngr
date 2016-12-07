@@ -11,7 +11,7 @@ Connection::Connection(int argc, char **argv)
 		SendBuffer();
 		//ShutDownConnection();
 		WaitForReceive();
-		Sleep(5000);
+		Sleep(2000);
 	}
 }
 
@@ -106,7 +106,7 @@ int Connection::SendBuffer()
 {
 	// Send an initial buffer
 	iResult = send(ConnectSocket, sendbuf, DEFAULT_BUFLEN, 0);
-	Sleep(5000);
+
 	if (iResult == SOCKET_ERROR) 
 	{
 		printf("send failed with error: %d\n", WSAGetLastError());

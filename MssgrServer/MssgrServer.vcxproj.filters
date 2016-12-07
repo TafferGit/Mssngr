@@ -15,12 +15,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="MssgrServerMain.cpp">
-      <Filter>Файлы исходного кода</Filter>
-    </ClCompile>
     <ClCompile Include="ServerSocket.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
+    <ClCompile Include="MssgrServerMain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MssgrServerMain.h">

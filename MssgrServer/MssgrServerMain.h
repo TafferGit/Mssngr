@@ -7,6 +7,7 @@
 #include <iostream>
 #include <clocale>
 #include <assert.h>
+#include <vector>
 
 //libevent
 #include <event2\event.h>
@@ -19,6 +20,8 @@
 #pragma comment (lib, "event.lib")
 #pragma comment (lib, "event_core.lib")
 #pragma comment (lib, "event_extra.lib")
+
+std::vector<evutil_socket_t> fd_vec;
 
 class MssgrServer
 {

@@ -18,11 +18,11 @@ private:
 	ClientUserDataFileInfo accountsDatafileInfo;
 	std::string loadedUsername;
 	std::string loadedPassword;
-	void CheckReturnedCodes(int loginResult);
+	void CheckLoginReturnedCodes(int loginResult);
 public:
 	LoginForm();
 	~LoginForm();
 	void ShowForm();
-	int Check();
+	int CheckLoginResult();
 };
 

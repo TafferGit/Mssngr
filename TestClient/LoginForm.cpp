@@ -25,11 +25,11 @@ void LoginForm::ShowForm()
 	std::cout << "Please enter your password: ";
 	std::cin >> *enteredPassword;
 
-	loginResult = Check();
-	CheckReturnedCodes(loginResult);
+	loginResult = CheckLoginResult();
+	CheckLoginReturnedCodes(loginResult);
 }
 
-int LoginForm::Check()
+int LoginForm::CheckLoginResult()
 {
 	int result; //Variable to store operations results
 	std::size_t foundLogin(0), foundPassword(0), foundEndline(0);
@@ -83,7 +83,7 @@ int LoginForm::Check()
 	return 4; //Unlikely result, something must go terribly wrong...
 }
 
-void LoginForm::CheckReturnedCodes(int loginResult) {
+void LoginForm::CheckLoginReturnedCodes(int loginResult) {
 
 	if (loginResult == LOGIN_OK) {
 		std::cout << "Login and password are correct!\n";
