@@ -7,11 +7,12 @@ Connection::Connection(int argc, char **argv)
 	result = InitializeWinSocket(argc, argv);
 	ResolveAddressAndPort(argv);
 	ConnectToAddress();
+	SendUserName();
 	while (1) {
+		MessageScreen();
 		SendBuffer();
 		//ShutDownConnection();
 		WaitForReceive();
-		Sleep(2000);
 	}
 }
 
@@ -24,9 +25,7 @@ Connection::~Connection()
 
 int Connection::InitializeWinSocket(int argc, char **argv) 
 {
-	sendbuf = new char[DEFAULT_BUFLEN];
-	sprintf(sendbuf, "%s", "Hello stranger!\n");
-
+	sendbuf = new char[512];
 	// Validate the parameters
 	if (argc != 2)
 	{
@@ -124,13 +123,19 @@ void Connection::WaitForReceive()
 {
 	// Receive until the peer closes the connection
 	//do {
-		iResult = recv(ConnectSocket, recvbuf, recvbuflen, 0);
-		if (iResult > 0)
-			printf("Bytes received: %d\n", iResult);
-		else if (iResult == 0)
-			printf("Connection closed\n");
-		else
-			printf("recv failed with error: %d\n", WSAGetLastError());
+	char recvbuf[DEFAULT_BUFLEN];
+	iResult = recv(ConnectSocket, recvbuf, recvbuflen, 0);
+	if (iResult > 0) {
+		printf("Bytes received: %d\n", iResult);
+		for (int i = 0; i < iResult; i++) {
+			printf("%c", recvbuf[i]);
+		}
+		printf("\n");
+	}
+	else if (iResult == 0)
+		printf("Connection closed\n");
+	else
+		printf("recv failed with error: %d\n", WSAGetLastError());
 	//} while (1);
 }
 
@@ -156,4 +161,20 @@ int Connection::ShutDownConnection()
 	return 0;
 }
 
+void Connection::MessageScreen()
+{
+	std::cout << "Enter your message: ";
+	std::getline(std::cin, message);
+	sprintf(sendbuf, "!m!%s!em!", message.c_str());
+}
+
+void Connection::SendUserName()
+{
+	std::cout << "Enter your username: ";
+	std::cin >> username;
+	std::cin.ignore();
+	sprintf(sendbuf, "!u!%s\n", username.c_str());
+	
+	send(ConnectSocket, sendbuf, DEFAULT_BUFLEN, 0);
+}
 

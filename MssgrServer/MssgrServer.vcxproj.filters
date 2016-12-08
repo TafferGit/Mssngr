@@ -18,7 +18,9 @@
     <ClCompile Include="ServerSocket.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
-    <ClCompile Include="MssgrServerMain.cpp" />
+    <ClCompile Include="MssgrServerMain.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MssgrServerMain.h">
