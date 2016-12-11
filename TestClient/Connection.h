@@ -25,10 +25,12 @@ private:
 	struct addrinfo *result = NULL,
 		*ptr = NULL,
 		hints;
+	char recvbuf[DEFAULT_BUFLEN];
 	char *sendbuf;
 	int iResult;
 	int recvbuflen = DEFAULT_BUFLEN;
 	std::string username;
+	std::string receiver_username;
 	std::string message;
 
 	int ResolveAddressAndPort(char **argv);

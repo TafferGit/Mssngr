@@ -8,12 +8,7 @@ Connection::Connection(int argc, char **argv)
 	ResolveAddressAndPort(argv);
 	ConnectToAddress();
 	SendUserName();
-	while (1) {
-		MessageScreen();
-		SendBuffer();
-		//ShutDownConnection();
-		WaitForReceive();
-	}
+	MessageScreen();
 }
 
 
@@ -42,8 +37,8 @@ int Connection::InitializeWinSocket(int argc, char **argv)
 	}
 
 	ZeroMemory(&hints, sizeof(hints));
-	hints.ai_family = AF_INET;
-	hints.ai_socktype = SOCK_STREAM;
+	hints.ai_family = AF_INET; 
+	hints.ai_socktype = SOCK_STREAM ;
 	hints.ai_protocol = IPPROTO_TCP;
 
 	return 0;
@@ -89,6 +84,9 @@ int Connection::ConnectToAddress()
 		break;
 	}
 
+	u_long iMode = 1;
+	ioctlsocket(ConnectSocket, FIONBIO, &iMode);
+
 	freeaddrinfo(result);
 
 	if (ConnectSocket == INVALID_SOCKET) 
@@ -113,9 +111,8 @@ int Connection::SendBuffer()
 		WSACleanup();
 		return 1;
 	}
-
-	printf("Bytes Sent: %ld\n", iResult);
-
+	
+	WaitForReceive();
 	return 0;
 }
 
@@ -123,19 +120,10 @@ void Connection::WaitForReceive()
 {
 	// Receive until the peer closes the connection
 	//do {
-	char recvbuf[DEFAULT_BUFLEN];
+
 	iResult = recv(ConnectSocket, recvbuf, recvbuflen, 0);
-	if (iResult > 0) {
-		printf("Bytes received: %d\n", iResult);
-		for (int i = 0; i < iResult; i++) {
-			printf("%c", recvbuf[i]);
-		}
-		printf("\n");
-	}
-	else if (iResult == 0)
-		printf("Connection closed\n");
-	else
-		printf("recv failed with error: %d\n", WSAGetLastError());
+	MessageScreen();
+	printf("recv failed with error: %d\n", WSAGetLastError());
 	//} while (1);
 }
 
@@ -149,7 +137,7 @@ void Connection::ConnectionCleanUp()
 int Connection::ShutDownConnection()
 {
 	// shutdown the connection since no more data will be sent
-	iResult = shutdown(ConnectSocket, SD_SEND);
+	iResult = shutdown(ConnectSocket, SD_BOTH);
 	if (iResult == SOCKET_ERROR) 
 	{
 		printf("shutdown failed with error: %d\n", WSAGetLastError());
@@ -163,9 +151,47 @@ int Connection::ShutDownConnection()
 
 void Connection::MessageScreen()
 {
-	std::cout << "Enter your message: ";
-	std::getline(std::cin, message);
-	sprintf(sendbuf, "!m!%s!em!", message.c_str());
+	system("cls");
+	if (iResult > 0) {
+		for (int i = 0; i < iResult; i++) {
+			printf("%c", recvbuf[i]);
+		}
+		printf("\nTo refresh the dialog press [R]. To write a message press [M].\n");
+		printf("To exit client press [Esc]\n");
+	}
+
+	else if (iResult == -1) {
+		printf("No new messages.\n");
+		printf("\nTo refresh the dialog press [R]. To write a message press [M].\n");
+		printf("To exit client press [Esc]\n");
+	}
+
+	int userChoice = _getch();
+
+	if (userChoice == 114 || userChoice == 170) {
+		WaitForReceive();
+	}
+	
+	else if (userChoice == 109 || userChoice == 236) {
+		system("cls");
+		std::cout << "Enter receiver's username: ";
+		std::getline(std::cin, receiver_username);
+		std::cout << "Enter your message: ";
+		std::getline(std::cin, message);
+		sprintf(sendbuf, "<rec>%s</rec>\n<msg>%s</msg>\n", receiver_username.c_str(), message.c_str());
+		SendBuffer();
+	}
+
+	else if (userChoice == 27) {
+		ShutDownConnection();
+		ConnectionCleanUp();
+		exit(0);
+	}
+
+	else {
+		printf("Incorrect input. Try again.\n");
+		MessageScreen();
+	}
 }
 
 void Connection::SendUserName()
@@ -174,7 +200,7 @@ void Connection::SendUserName()
 	std::cin >> username;
 	std::cin.ignore();
 	sprintf(sendbuf, "!u!%s\n", username.c_str());
-	
-	send(ConnectSocket, sendbuf, DEFAULT_BUFLEN, 0);
+
+	SendBuffer();
 }
 

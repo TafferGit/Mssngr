@@ -13,6 +13,7 @@
 #include <process.h>
 #include <thread>
 #include <iostream>
+#include <conio.h>
 
 #include "Connection.h"
 #include "User.h"
