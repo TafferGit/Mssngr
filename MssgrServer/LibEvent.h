@@ -27,6 +27,7 @@ private:
 	static void retreive_username(char *buf, UserData *ud);
 	static int check_fd_existence(bufferevent *buf_ev);
 	static void on_message_receive(bufferevent *buf_ev, char *buf);
+	static void on_registration_receive(UserData ud, char *regCode);
 public:
 	LibEvent();
 	~LibEvent();

@@ -26,7 +26,6 @@ private:
 		*ptr = NULL,
 		hints;
 	char recvbuf[DEFAULT_BUFLEN];
-	char *sendbuf;
 	int iResult;
 	int recvbuflen = DEFAULT_BUFLEN;
 	std::string username;
@@ -35,13 +34,14 @@ private:
 
 	int ResolveAddressAndPort(char **argv);
 	int ConnectToAddress();
-	int SendBuffer();
 	int ShutDownConnection();
 	void SendUserName();
 	void MessageScreen();
 	void WaitForReceive();
 	void ConnectionCleanUp();
 public:
+	int WaitForReceive(char *outRecvbuf);
+	int SendBuffer(char *sendBuffer);
 	Connection(int argc, char **argv);
 	~Connection();
 	int InitializeWinSocket(int argc, char **argv);

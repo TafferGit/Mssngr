@@ -1,8 +1,9 @@
 #include "User.h"
 
 
-User::User()
+User::User(Connection *c)
 {
+	this->c = c;
 }
 
 
@@ -12,17 +13,17 @@ User::~User()
 
 void User::Register(void)
 {
-	RegistrationForm * rf = new RegistrationForm(&login, &password);
+	RegistrationForm * rf = new RegistrationForm(&login, &password, c);
 	rf->ShowForm();
 	delete rf;
 }
 
-void User::Login(void)
-{
-	LoginForm * lf = new LoginForm;
-	lf->ShowForm();
-	delete lf;
-}
+//void User::Login(void)
+//{
+//	LoginForm * lf = new LoginForm;
+//	lf->ShowForm();
+//	delete lf;
+//}
 
 std::string User::GetLogin()
 {

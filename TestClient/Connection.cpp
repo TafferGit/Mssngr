@@ -7,8 +7,8 @@ Connection::Connection(int argc, char **argv)
 	result = InitializeWinSocket(argc, argv);
 	ResolveAddressAndPort(argv);
 	ConnectToAddress();
-	SendUserName();
-	MessageScreen();
+	//SendUserName();
+	//MessageScreen();
 }
 
 
@@ -17,10 +17,8 @@ Connection::~Connection()
 	ConnectionCleanUp();
 }
 
-
 int Connection::InitializeWinSocket(int argc, char **argv) 
 {
-	sendbuf = new char[512];
 	// Validate the parameters
 	if (argc != 2)
 	{
@@ -99,10 +97,10 @@ int Connection::ConnectToAddress()
 	return 0;
 }
 
-int Connection::SendBuffer()
+int Connection::SendBuffer(char *sendBuffer)
 {
 	// Send an initial buffer
-	iResult = send(ConnectSocket, sendbuf, DEFAULT_BUFLEN, 0);
+	iResult = send(ConnectSocket, sendBuffer, DEFAULT_BUFLEN, 0);
 
 	if (iResult == SOCKET_ERROR) 
 	{
@@ -112,19 +110,20 @@ int Connection::SendBuffer()
 		return 1;
 	}
 	
-	WaitForReceive();
 	return 0;
 }
 
 void Connection::WaitForReceive()
 {
-	// Receive until the peer closes the connection
-	//do {
-
 	iResult = recv(ConnectSocket, recvbuf, recvbuflen, 0);
 	MessageScreen();
 	printf("recv failed with error: %d\n", WSAGetLastError());
-	//} while (1);
+}
+
+int Connection::WaitForReceive(char * outRecvbuf)
+{
+	int iResult = recv(ConnectSocket, outRecvbuf, recvbuflen, 0);
+	return iResult;
 }
 
 void Connection::ConnectionCleanUp()
@@ -151,6 +150,8 @@ int Connection::ShutDownConnection()
 
 void Connection::MessageScreen()
 {
+	char sendBuffer[DEFAULT_BUFLEN];
+
 	system("cls");
 	if (iResult > 0) {
 		for (int i = 0; i < iResult; i++) {
@@ -178,8 +179,8 @@ void Connection::MessageScreen()
 		std::getline(std::cin, receiver_username);
 		std::cout << "Enter your message: ";
 		std::getline(std::cin, message);
-		sprintf(sendbuf, "<rec>%s</rec>\n<msg>%s</msg>\n", receiver_username.c_str(), message.c_str());
-		SendBuffer();
+		sprintf(sendBuffer, "<rec>%s</rec>\n<msg>%s</msg>\n", receiver_username.c_str(), message.c_str());
+		SendBuffer(sendBuffer);
 	}
 
 	else if (userChoice == 27) {
@@ -193,14 +194,3 @@ void Connection::MessageScreen()
 		MessageScreen();
 	}
 }
-
-void Connection::SendUserName()
-{
-	std::cout << "Enter your username: ";
-	std::cin >> username;
-	std::cin.ignore();
-	sprintf(sendbuf, "!u!%s\n", username.c_str());
-
-	SendBuffer();
-}
-

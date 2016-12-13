@@ -7,13 +7,13 @@
 #define MCF_FILE_EMPTY 2
 #define MCF_FILE_INVALID_FORMAT 3
 
-class ClientFile
+class ServerFile
 {
 protected:
 	std::fstream fileStream;
 public:
-	ClientFile();
-	~ClientFile();
+	ServerFile();
+	~ServerFile();
 	virtual int SaveAccountDataToFile(std::string login, std::string password);
 };
 

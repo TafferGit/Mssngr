@@ -2,6 +2,8 @@
 #ifndef MSSGR_SERVER_MAIN_H
 #define MSSGR_SERVER_MAIN_H
 
+#define DEFAULT_BUFLEN 512
+
 #include <string>
 #include <iostream>
 #include <clocale>

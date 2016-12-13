@@ -27,12 +27,6 @@
     <ClCompile Include="RegistrationForm.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
-    <ClCompile Include="ClientFile.cpp">
-      <Filter>Файлы исходного кода</Filter>
-    </ClCompile>
-    <ClCompile Include="ClientUserDataFile.cpp">
-      <Filter>Файлы исходного кода</Filter>
-    </ClCompile>
     <ClCompile Include="LoginForm.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
@@ -48,12 +42,6 @@
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
     <ClInclude Include="RegistrationForm.h">
-      <Filter>Заголовочные файлы</Filter>
-    </ClInclude>
-    <ClInclude Include="ClientFile.h">
-      <Filter>Заголовочные файлы</Filter>
-    </ClInclude>
-    <ClInclude Include="ClientUserDataFile.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
     <ClInclude Include="LoginForm.h">

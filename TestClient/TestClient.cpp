@@ -12,9 +12,9 @@ TestClient::TestClient(int argc, char ** argv)
 {
 	c = new Connection(argc, argv);
 
-	user = new User();
+	user = new User(c);
 	user->Register();
-	user->Login();
+	//user->Login();
 }
 
 TestClient::~TestClient()

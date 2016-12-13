@@ -1,4 +1,6 @@
 #include "LibEvent.h"
+#include "ServerUserDataFile.h"
+#include "Parser.h"
 
 int LibEvent::iResult = 0;
 event_base* LibEvent::base = NULL;
@@ -13,7 +15,6 @@ LibEvent::LibEvent()
 {
 }
 
-
 LibEvent::~LibEvent()
 {
 }
@@ -27,11 +28,9 @@ LibEvent::~LibEvent()
 //@param arg
 void LibEvent::data_read_cb(struct bufferevent *buf_ev, void *arg)
 {
-	char buf[512];
-	char outBuf[512];
+	char buf[DEFAULT_BUFLEN];
 	int checkResult = 0;
 	UserData ud;
-	evbuffer *buf_output;
 
 	ud.in_buf = bufferevent_get_input(buf_ev);
 	ud.out_buf = bufferevent_get_output(buf_ev);
@@ -40,6 +39,26 @@ void LibEvent::data_read_cb(struct bufferevent *buf_ev, void *arg)
 	evbuffer_copyout(ud.in_buf, buf, buf_input_size);
 	evbuffer_drain(ud.in_buf, buf_input_size);
 
+	//If received registration request
+	if (buf[0] == '<' && tolower(buf[1]) == tolower('r') && tolower(buf[2]) == 'e' && tolower(buf[3]) == 'g' && tolower(buf[4]) == '>' && buf[5] == '\n') {
+		std::string registeringUsername;
+		std::string registeringPassword;
+		char *checkResult = NULL;
+		Parser * parserPtr = new Parser;
+		ServerUserDataFile * serverUsrDataFilePtr = new ServerUserDataFile();
+
+		registeringUsername = parserPtr->parse_login_for_registration(buf); //Parse login from a received packet
+		registeringPassword = parserPtr->parse_password_for_registration(buf); //Parse password from a received packet
+		checkResult = serverUsrDataFilePtr->CheckLoginInMsf(registeringUsername); //Check if it exists in MCF
+		if (checkResult == LOGIN_OK) {
+			serverUsrDataFilePtr->SaveAccountDataToFile(registeringUsername, registeringPassword);
+			evbuffer_add_printf(ud.out_buf, "%s", LOGIN_OK);
+		}
+		else if (checkResult == LOGIN_IN_USE) {
+			evbuffer_add_printf(ud.out_buf, "%s", LOGIN_IN_USE);
+		}
+		else evbuffer_add_printf(ud.out_buf, "%s", LOGIN_CHECK_PROBLEMS);
+	}
 
 	//If received connection by username.
 	if (buf[0] == '!' && tolower(buf[1]) == 'u' && buf[2] == '!') {
@@ -66,7 +85,7 @@ void LibEvent::data_event_cb(struct bufferevent *buf_ev, short events, void *arg
 	if (events & BEV_EVENT_ERROR) {
 		perror("bufferevent object error");
 		if (events & (BEV_EVENT_EOF | BEV_EVENT_ERROR)) {
-			for (int i = 0; i < fd_vec.size(); i++) {
+			for (size_t i = 0; i < fd_vec.size(); i++) {
 				if (fd_vec.at(i) == disconnectedFd) {
 					fd_vec.erase(fd_vec.begin() + i);
 				}
@@ -111,6 +130,7 @@ void LibEvent::accept_error_cb(evconnlistener *listener, void *arg) {
 	event_base_loopexit(base, NULL);
 }
 
+
 void LibEvent::retreive_username(char * buf, UserData * ud)
 {
 	int n = 3;
@@ -125,7 +145,7 @@ int LibEvent::check_fd_existence(bufferevent *buf_ev)
 	int checkResult = 0;
 
 	//Look if there is this fd in vec
-	for (int i = 0; i < ud_vec.size(); i++) {
+	for (size_t i = 0; i < ud_vec.size(); i++) {
 		if (ud_vec.at(i).fd == bufferevent_getfd(buf_ev))
 			checkResult = 1;
 		else checkResult = 0;
@@ -162,16 +182,27 @@ void LibEvent::on_message_receive(bufferevent *buf_ev, char * buf)
 
 	//Here we compare incoming buffer file descriptor with fds we have in our vector
 	//When we find a match we retrieve username for that fd
-	for (int i = 0; i < ud_vec.size(); i++) {
+	for (size_t i = 0; i < ud_vec.size(); i++) {
 		if (ud_vec.at(i).fd == bufferevent_getfd(buf_ev)) {
 			incUsername = ud_vec.at(i).username;
 		}
 	}
 
-	for (int i = 0; i < ud_vec.size(); i++) {
+	for (size_t i = 0; i < ud_vec.size(); i++) {
 		if (ud_vec.at(i).username == receiverUsername) {
 			evbuffer_add_printf(ud_vec.at(i).out_buf, "%s: %s", incUsername.c_str(), incMessage.c_str());
 		}
+	}
+}
+
+void LibEvent::on_registration_receive(UserData ud, char *regCode)
+{
+	if (regCode == LOGIN_OK) {
+		evbuffer_add_printf(ud.out_buf, "%s", regCode);
+	}
+
+	else if (regCode == LOGIN_IN_USE) {
+
 	}
 }
 
