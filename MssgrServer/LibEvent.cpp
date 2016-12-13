@@ -58,10 +58,15 @@ void LibEvent::data_read_cb(struct bufferevent *buf_ev, void *arg)
 		on_clreq_receive(&ud, buf);
 	}
 
+	//If received add contact to contact list request
 	if (buf[0] == '<' && buf[1] == 'c' && buf[2] == 'l' && buf[3] == 'a' && buf[4] == 'd' && buf[5] == 'd' && buf[6] == '>') {
 		on_cladd_receive(&ud, buf);
 	}
 
+	//If received contact list request
+	if (buf[0] == '<' && buf[1] == 'c' && buf[2] == 'l' && buf[3] == '>') {
+		on_cl_receive(&ud, buf);
+	}
 	//If received message
 	if (buf[0] == '<' && tolower(buf[1]) == 'r' && buf[2] == 'e' && buf [3] == 'c' && buf[4] == '>') {
 		on_message_receive(buf_ev, buf);
@@ -174,7 +179,7 @@ void LibEvent::on_message_receive(bufferevent *buf_ev, char * buf)
 
 	for (size_t i = 0; i < ud_vec.size(); i++) {
 		if (ud_vec.at(i).username == receiverUsername) {
-			evbuffer_add_printf(ud_vec.at(i).out_buf, "%s: %s", incUsername.c_str(), incMessage.c_str());
+			evbuffer_add_printf(ud_vec.at(i).out_buf, "<fu>%s</fu><im>%s</im>", incUsername.c_str(), incMessage.c_str());
 		}
 	}
 }
@@ -257,6 +262,17 @@ void LibEvent::on_cladd_receive(UserData * ud, char * buf)
 	pSrvUsrDataFile->SaveAccountCLToFile(ud->username, contactName);
 }
 
+void LibEvent::on_cl_receive(UserData * ud, char * buf) {
+	int n = 0;
+	std::string contactListData;
+	ServerUserDataFile * pSrvUsrDataFile = new ServerUserDataFile;
+	while (ud_vec.at(n).fd != ud->fd) {
+		++n;
+	}
+	ud->username = ud_vec.at(n).username;
+	pSrvUsrDataFile->LoadAccountCLFromFile(&contactListData, ud->username);
+	evbuffer_add_printf(ud->out_buf, "%s", contactListData.c_str());
+}
 void LibEvent::initialize_libevent()
 {
 	std::cout << "Please enter port number where server will listen.\n";

@@ -30,6 +30,7 @@ private:
 	static char * on_login_receive(UserData *ud, char * logCode);
 	static void on_clreq_receive(UserData *ud, char *buf);
 	static void on_cladd_receive(UserData *ud, char *buf);
+	static void LibEvent::on_cl_receive(UserData * ud, char * buf);
 public:
 	LibEvent();
 	~LibEvent();

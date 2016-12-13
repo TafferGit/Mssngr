@@ -193,6 +193,29 @@ int ServerUserDataFile::SaveAccountCLToFile(std::string login, std::string conta
 		return 1;
 	}
 }
+
+int ServerUserDataFile::LoadAccountCLFromFile(std::string *buf, std::string login) {
+	login.append(".hsf");
+	std::string data;
+	fileStream.open(login, std::ios::in);
+	if (fileStream.fail()) {
+		std::cerr << "Error: " << strerror(errno) << std::endl;
+		buf[0] = '1';
+		return MCF_FILE_NOT_FOUND;
+	}
+
+	else {
+		fileStream.seekg(0, std::ios::end);
+		data.reserve(fileStream.tellg());
+		fileStream.seekg(0, std::ios::beg);
+
+		data.assign((std::istreambuf_iterator<char>(fileStream)),
+			std::istreambuf_iterator<char>());
+		fileStream.close();
+
+		*buf = data;
+	}
+}
 int ServerUserDataFile::LoadAccountData(ServerUserDataFileInfo * fileInfo)
 {
 	ServerUserDataFileInfo currentFileInfo;

@@ -27,4 +27,5 @@ public:
 	char *CheckLoginInMsf(std::string username);
 	void LoadAllUsernames(std::vector<std::string>*userNamesVec);
 	int SaveAccountCLToFile(std::string login, std::string contact);
+	int LoadAccountCLFromFile(std::string *buf, std::string login);
 };
