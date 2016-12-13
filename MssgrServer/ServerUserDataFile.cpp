@@ -4,6 +4,62 @@
 #include <errno.h>
 #include <locale>
 
+char * ServerUserDataFile::CheckLoginResult(std::string login, std::string password)
+{
+	int result; //Variable to store operations results
+	std::size_t foundLogin(0), foundPassword(0), foundEndline(0);
+	ServerUserDataFileInfo *pAccsDataFileInfo = new ServerUserDataFileInfo;
+	ServerUserDataFile *pServerFile = new ServerUserDataFile();
+	std::string loadedUsername; std::string loadedPassword;
+
+	result = pServerFile->LoadAccountData(pAccsDataFileInfo); //Loading account data from users.mcf
+
+	if (result == MCF_FILE_OK) {
+		/*Iterate through loaded account data to find if any of usernames and passwords in users.mcf match
+		the entered username and password*/
+
+		for (size_t i = 0; i < pAccsDataFileInfo->fileSize; i = foundEndline + 1) {
+
+			foundLogin = pAccsDataFileInfo->data.find("!login!", i) + (std::size_t)sizeof("!login!") - 1;
+			foundPassword = pAccsDataFileInfo->data.find("!password!", i) + (std::size_t)sizeof"!password!" - 1;
+			foundEndline = pAccsDataFileInfo->data.find("\n", i);
+
+			if (foundLogin != std::string::npos && foundPassword != std::string::npos && foundEndline != std::string::npos) {
+
+				for (std::size_t j = foundLogin; j < foundPassword - 10; j++) {
+					loadedUsername += pAccsDataFileInfo->data.at(j);
+				}
+
+				for (std::size_t j = foundPassword; j < foundEndline; j++) {
+					loadedPassword += pAccsDataFileInfo->data.at(j);
+				}
+
+				//If we find a match - we return LOGIN_OK which means that username and password entered by user are correct
+				if (password.compare(loadedPassword) == 0 && login.compare(loadedUsername) == 0) {
+					return LOGIN_OK;
+				}
+				else { loadedUsername.clear(); loadedPassword.clear(); } //Clear variables and iterate further
+			}
+
+			//If we've reached file's end and hadn't found any mathches we tell that login or password or both are incorrect
+			else if (foundEndline >= pAccsDataFileInfo->fileSize)
+				return LOGIN_OR_PASSWORD_INCORRECT;
+		}
+	}
+
+	else if (result == MCF_FILE_NOT_FOUND) {
+		std::cout << "Users.mcf file was not found!\n";
+		return LOGIN_CHECK_PROBLEMS;
+	}
+
+	else if (result == MCF_FILE_EMPTY) {
+		std::cout << "Users.mcf file is empty!\n";
+		return LOGIN_CHECK_PROBLEMS;
+	}
+
+	return LOGIN_CHECK_PROBLEMS; //Unlikely result, something must go terribly wrong...
+}
+
 char * ServerUserDataFile::CheckLoginInMsf(std::string username)
 {
 	size_t foundLogin(0), foundPassword(0), foundEndline(0); //Variables to save position of !login! and !password! in users.mcf

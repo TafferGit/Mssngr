@@ -18,12 +18,12 @@ void User::Register(void)
 	delete rf;
 }
 
-//void User::Login(void)
-//{
-//	LoginForm * lf = new LoginForm;
-//	lf->ShowForm();
-//	delete lf;
-//}
+void User::Login(void)
+{
+	LoginForm * lf = new LoginForm(c);
+	lf->ShowForm();
+	delete lf;
+}
 
 std::string User::GetLogin()
 {

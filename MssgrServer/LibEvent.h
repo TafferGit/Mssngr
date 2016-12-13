@@ -24,10 +24,10 @@ private:
 	static void data_event_cb(struct bufferevent *buf_ev, short events, void *arg);
 	static void accept_connection_cb(struct evconnlistener *listener, evutil_socket_t fd, SOCKADDR *addr, int sock_len, void *arg);
 	static void accept_error_cb(evconnlistener *listener, void *arg);
-	static void retreive_username(char *buf, UserData *ud);
 	static int check_fd_existence(bufferevent *buf_ev);
 	static void on_message_receive(bufferevent *buf_ev, char *buf);
-	static void on_registration_receive(UserData ud, char *regCode);
+	static void on_registration_receive(UserData *ud, char *buf);
+	static char * on_login_receive(UserData *ud, char * logCode);
 public:
 	LibEvent();
 	~LibEvent();

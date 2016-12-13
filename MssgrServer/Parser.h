@@ -6,7 +6,7 @@ class Parser
 public:
 	Parser();
 	~Parser();
-	std::string parse_login_for_registration(char *buf);
-	std::string parse_password_for_registration(char *buf);
+	std::string parse_login(char *buf);
+	std::string parse_password(char *buf);
 };
 

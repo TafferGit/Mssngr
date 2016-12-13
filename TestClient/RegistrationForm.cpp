@@ -76,7 +76,7 @@ void RegistrationForm::ShowForm()
 	}
 
 	else if (recvBuf[0] == LOGIN_IN_USE) {
-		std::cout << "We are sorry, but the login you entered is in use. Please, provide antoher login.\n";
+		std::cout << "We are sorry, but the login you've entered is in use. Please, provide antoher login.\n";
 		system("pause");
 		system("cls");
 		ShowForm();

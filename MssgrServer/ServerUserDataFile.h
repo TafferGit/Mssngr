@@ -6,6 +6,7 @@
 #define LOGIN_OK "4"
 #define LOGIN_IN_USE "5"
 #define LOGIN_CHECK_PROBLEMS "6"
+#define LOGIN_OR_PASSWORD_INCORRECT "7"
 
 struct ServerUserDataFileInfo {
 	std::string data;
@@ -21,5 +22,6 @@ public:
 	ServerUserDataFile();
 	~ServerUserDataFile();
 	int SaveAccountDataToFile(std::string login, std::string password);
+	char *CheckLoginResult(std::string login, std::string password);
 	char *CheckLoginInMsf(std::string username);
 };

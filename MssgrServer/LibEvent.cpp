@@ -40,29 +40,14 @@ void LibEvent::data_read_cb(struct bufferevent *buf_ev, void *arg)
 	evbuffer_drain(ud.in_buf, buf_input_size);
 
 	//If received registration request
-	if (buf[0] == '<' && tolower(buf[1]) == tolower('r') && tolower(buf[2]) == 'e' && tolower(buf[3]) == 'g' && tolower(buf[4]) == '>' && buf[5] == '\n') {
-		std::string registeringUsername;
-		std::string registeringPassword;
-		char *checkResult = NULL;
-		Parser * parserPtr = new Parser;
-		ServerUserDataFile * serverUsrDataFilePtr = new ServerUserDataFile();
-
-		registeringUsername = parserPtr->parse_login_for_registration(buf); //Parse login from a received packet
-		registeringPassword = parserPtr->parse_password_for_registration(buf); //Parse password from a received packet
-		checkResult = serverUsrDataFilePtr->CheckLoginInMsf(registeringUsername); //Check if it exists in MCF
-		if (checkResult == LOGIN_OK) {
-			serverUsrDataFilePtr->SaveAccountDataToFile(registeringUsername, registeringPassword);
-			evbuffer_add_printf(ud.out_buf, "%s", LOGIN_OK);
-		}
-		else if (checkResult == LOGIN_IN_USE) {
-			evbuffer_add_printf(ud.out_buf, "%s", LOGIN_IN_USE);
-		}
-		else evbuffer_add_printf(ud.out_buf, "%s", LOGIN_CHECK_PROBLEMS);
+	if (buf[0] == '<' && tolower(buf[1]) == 'r' && tolower(buf[2]) == 'e' && tolower(buf[3]) == 'g' && tolower(buf[4]) == '>' && buf[5] == '\n') {
+		on_registration_receive(&ud, buf);
 	}
 
-	//If received connection by username.
-	if (buf[0] == '!' && tolower(buf[1]) == 'u' && buf[2] == '!') {
-		retreive_username(buf, &ud);
+	//if received login request
+	if (buf[0] == '<' && tolower(buf[1]) == 'r' && tolower(buf[2]) == 'e' && tolower(buf[3]) == 'q' 
+		&& tolower(buf[4]) == 'l' && tolower(buf[5]) == 'o' && tolower(buf[6]) == 'g' && tolower(buf[7]) == '>') {
+		on_login_receive(&ud, buf);
 		checkResult = check_fd_existence(buf_ev);
 
 		if (checkResult == 0) { ud_vec.push_back(ud); }
@@ -130,16 +115,6 @@ void LibEvent::accept_error_cb(evconnlistener *listener, void *arg) {
 	event_base_loopexit(base, NULL);
 }
 
-
-void LibEvent::retreive_username(char * buf, UserData * ud)
-{
-	int n = 3;
-	while (buf[n] != '\n') {
-		ud->username += buf[n];
-		++n;
-	}
-}
-
 int LibEvent::check_fd_existence(bufferevent *buf_ev)
 {
 	int checkResult = 0;
@@ -195,17 +170,56 @@ void LibEvent::on_message_receive(bufferevent *buf_ev, char * buf)
 	}
 }
 
-void LibEvent::on_registration_receive(UserData ud, char *regCode)
+void LibEvent::on_registration_receive(UserData *ud, char *buf)
 {
-	if (regCode == LOGIN_OK) {
-		evbuffer_add_printf(ud.out_buf, "%s", regCode);
-	}
+	std::string registeringUsername;
+	std::string registeringPassword;
+	char *checkResult = NULL;
+	Parser * pParser = new Parser;
+	ServerUserDataFile * pSrvUsrDataFile = new ServerUserDataFile();
 
-	else if (regCode == LOGIN_IN_USE) {
+	registeringUsername = pParser->parse_login(buf); //Parse login from a received packet
+	registeringPassword = pParser->parse_password(buf); //Parse password from a received packet
+	delete pParser;
 
+	checkResult = pSrvUsrDataFile->CheckLoginInMsf(registeringUsername); //Check if it exists in MCF
+
+	if (checkResult == LOGIN_OK) {
+		pSrvUsrDataFile->SaveAccountDataToFile(registeringUsername, registeringPassword);
+		evbuffer_add_printf(ud->out_buf, "%s", LOGIN_OK);
 	}
+	else if (checkResult == LOGIN_IN_USE) {
+		evbuffer_add_printf(ud->out_buf, "%s", LOGIN_IN_USE);
+	}
+	else evbuffer_add_printf(ud->out_buf, "%s", LOGIN_CHECK_PROBLEMS);
+
 }
 
+char * LibEvent::on_login_receive(UserData *ud, char *buf) {
+
+	std::string incomingUsername;
+	std::string incomingPassword;
+	char *checkResult = NULL;
+	Parser * pParser = new Parser;
+	ServerUserDataFile * pSrvUsrDataFile = new ServerUserDataFile();
+
+	incomingUsername = pParser->parse_login(buf);
+	incomingPassword = pParser->parse_password(buf);
+	delete pParser;
+
+	checkResult = pSrvUsrDataFile->CheckLoginResult(incomingUsername, incomingPassword);
+
+	if (checkResult == LOGIN_OK) {
+		evbuffer_add_printf(ud->out_buf, "%s", LOGIN_OK);
+		ud->username = incomingUsername;
+		return LOGIN_OK;
+	}
+
+	else if (checkResult == LOGIN_OR_PASSWORD_INCORRECT) {
+		evbuffer_add_printf(ud->out_buf, "%s", LOGIN_OR_PASSWORD_INCORRECT);
+	}
+	else evbuffer_add_printf(ud->out_buf, "%s", LOGIN_CHECK_PROBLEMS);
+}
 void LibEvent::initialize_libevent()
 {
 	std::cout << "Please enter port number where server will listen.\n";

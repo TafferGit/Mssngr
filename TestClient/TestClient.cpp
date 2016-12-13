@@ -14,7 +14,7 @@ TestClient::TestClient(int argc, char ** argv)
 
 	user = new User(c);
 	user->Register();
-	//user->Login();
+	user->Login();
 }
 
 TestClient::~TestClient()
