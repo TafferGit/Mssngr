@@ -147,6 +147,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Connection.cpp" />
+    <ClCompile Include="ContactList.cpp" />
     <ClCompile Include="LoginForm.cpp" />
     <ClCompile Include="RegistrationForm.cpp" />
     <ClCompile Include="TestClient.cpp" />
@@ -154,6 +155,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Connection.h" />
+    <ClInclude Include="ContactList.h" />
     <ClInclude Include="LoginForm.h" />
     <ClInclude Include="RegistrationForm.h" />
     <ClInclude Include="TestClient.h" />

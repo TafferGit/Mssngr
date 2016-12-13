@@ -2,6 +2,7 @@
 #include "ServerFile.h"
 #include <string>
 #include <streambuf>
+#include <vector>
 
 #define LOGIN_OK "4"
 #define LOGIN_IN_USE "5"
@@ -24,4 +25,6 @@ public:
 	int SaveAccountDataToFile(std::string login, std::string password);
 	char *CheckLoginResult(std::string login, std::string password);
 	char *CheckLoginInMsf(std::string username);
+	void LoadAllUsernames(std::vector<std::string>*userNamesVec);
+	int SaveAccountCLToFile(std::string login, std::string contact);
 };

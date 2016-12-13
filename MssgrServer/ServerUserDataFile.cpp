@@ -9,13 +9,12 @@ char * ServerUserDataFile::CheckLoginResult(std::string login, std::string passw
 	int result; //Variable to store operations results
 	std::size_t foundLogin(0), foundPassword(0), foundEndline(0);
 	ServerUserDataFileInfo *pAccsDataFileInfo = new ServerUserDataFileInfo;
-	ServerUserDataFile *pServerFile = new ServerUserDataFile();
 	std::string loadedUsername; std::string loadedPassword;
 
-	result = pServerFile->LoadAccountData(pAccsDataFileInfo); //Loading account data from users.mcf
+	result = LoadAccountData(pAccsDataFileInfo); //Loading account data from users.msf
 
 	if (result == MCF_FILE_OK) {
-		/*Iterate through loaded account data to find if any of usernames and passwords in users.mcf match
+		/*Iterate through loaded account data to find if any of usernames and passwords in users.msf match
 		the entered username and password*/
 
 		for (size_t i = 0; i < pAccsDataFileInfo->fileSize; i = foundEndline + 1) {
@@ -63,12 +62,11 @@ char * ServerUserDataFile::CheckLoginResult(std::string login, std::string passw
 char * ServerUserDataFile::CheckLoginInMsf(std::string username)
 {
 	size_t foundLogin(0), foundPassword(0), foundEndline(0); //Variables to save position of !login! and !password! in users.mcf
-	ServerUserDataFile *pServerFile = new ServerUserDataFile(); //Create new UserDataFile class to open users.msf for reading
 	ServerUserDataFileInfo *pAccsDataFileInfo = new ServerUserDataFileInfo; //Strict for actial data loaded from msf file
 	int result; //Variable to store functions return values
 	std::string loadedUsername;
 
-	result = pServerFile->LoadAccountData(pAccsDataFileInfo);
+	result = LoadAccountData(pAccsDataFileInfo);
 
 	if (result == MCF_FILE_OK) {
 		if (pAccsDataFileInfo->data != "") {
@@ -128,6 +126,35 @@ char * ServerUserDataFile::CheckLoginInMsf(std::string username)
 	else return LOGIN_CHECK_PROBLEMS; //Unlikely to happen but...
 }
 
+void ServerUserDataFile::LoadAllUsernames(std::vector<std::string> *userNamesVec)
+{
+	int result = 0; //Variable to store msf file operations return codes
+	ServerUserDataFileInfo * pSrvUsrDataFileInfo = new ServerUserDataFileInfo;
+	std::string loadedUsername;
+	size_t pos_start = 0;
+	size_t pos_end = 0;
+	size_t pos_endline = 0;
+
+	result = LoadAccountData(pSrvUsrDataFileInfo);
+
+	if (result == MCF_FILE_OK) {
+		for (size_t i = 0; i <= pSrvUsrDataFileInfo->fileSize; i = pos_endline + 2) {
+			//If we have been able to find !login! and !password! we start to fill our vector
+			pos_start = pSrvUsrDataFileInfo->data.find("!login!", pos_start);
+			pos_end = pSrvUsrDataFileInfo->data.find("!password!", pos_end);
+			pos_endline = pSrvUsrDataFileInfo->data.find("\n", pos_endline);
+			size_t loginStart = pos_start + 7;
+			size_t loginSize = pos_end - loginStart;
+			if (pos_start != std::string::npos && pos_end != std::string::npos && pos_endline != std::string::npos) {
+				loadedUsername = pSrvUsrDataFileInfo->data.substr(loginStart, loginSize);
+				userNamesVec->push_back(loadedUsername);
+				++pos_start; ++pos_end; ++pos_endline;
+			}
+			else break;
+		}
+	}
+}
+
 ServerUserDataFile::ServerUserDataFile()
 {
 }
@@ -152,6 +179,20 @@ int ServerUserDataFile::SaveAccountDataToFile(std::string login, std::string pas
 	}
 }
 
+int ServerUserDataFile::SaveAccountCLToFile(std::string login, std::string contact) {
+	login.append(".hsf");
+	fileStream.open(login, std::fstream::out | std::fstream::app);
+	if (!fileStream.fail()) {
+		fileStream << "<un>" << contact << "</un>\n";
+		fileStream.close();
+		return 0;
+	}
+
+	else {
+		std::cerr << "Error: " << strerror(errno) << std::endl;
+		return 1;
+	}
+}
 int ServerUserDataFile::LoadAccountData(ServerUserDataFileInfo * fileInfo)
 {
 	ServerUserDataFileInfo currentFileInfo;

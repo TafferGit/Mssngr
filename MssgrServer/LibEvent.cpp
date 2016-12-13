@@ -53,6 +53,15 @@ void LibEvent::data_read_cb(struct bufferevent *buf_ev, void *arg)
 		if (checkResult == 0) { ud_vec.push_back(ud); }
 	}
 
+	//If received contacts request
+	if (buf[0] == '<' && buf[1] == 'c' && buf[2] == 'l' && buf[3] == 'r' && buf[4] == 'e' && buf[5] == 'q' && buf[6] == '>') {
+		on_clreq_receive(&ud, buf);
+	}
+
+	if (buf[0] == '<' && buf[1] == 'c' && buf[2] == 'l' && buf[3] == 'a' && buf[4] == 'd' && buf[5] == 'd' && buf[6] == '>') {
+		on_cladd_receive(&ud, buf);
+	}
+
 	//If received message
 	if (buf[0] == '<' && tolower(buf[1]) == 'r' && buf[2] == 'e' && buf [3] == 'c' && buf[4] == '>') {
 		on_message_receive(buf_ev, buf);
@@ -220,6 +229,34 @@ char * LibEvent::on_login_receive(UserData *ud, char *buf) {
 	}
 	else evbuffer_add_printf(ud->out_buf, "%s", LOGIN_CHECK_PROBLEMS);
 }
+
+void LibEvent::on_clreq_receive(UserData *ud, char *buf) {
+	std::vector<std::string> loadedUsernamesVec;
+	ServerUserDataFile * pSrvUsrDataFile = new ServerUserDataFile();
+	pSrvUsrDataFile->LoadAllUsernames(&loadedUsernamesVec);
+	std::string usernames;
+
+	for (size_t i = 0; i < loadedUsernamesVec.size(); i++) {
+		usernames.append("<un>");
+		usernames.append(loadedUsernamesVec.at(i));
+		usernames.append("</un>");
+	}
+	evbuffer_add_printf(ud->out_buf, "%s", usernames.c_str());
+}
+
+void LibEvent::on_cladd_receive(UserData * ud, char * buf)
+{
+	int n = 0;
+	Parser *pParser = new Parser;
+	ServerUserDataFile * pSrvUsrDataFile = new ServerUserDataFile;
+	std::string contactName = pParser->parse_contact_name(buf);
+	while (ud_vec.at(n).fd != ud->fd) {
+		++n;
+	}
+	ud->username = ud_vec.at(n).username;
+	pSrvUsrDataFile->SaveAccountCLToFile(ud->username, contactName);
+}
+
 void LibEvent::initialize_libevent()
 {
 	std::cout << "Please enter port number where server will listen.\n";

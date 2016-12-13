@@ -17,6 +17,7 @@
 
 #include "Connection.h"
 #include "User.h"
+#include "ContactList.h"
 
 
 
@@ -25,6 +26,7 @@ class TestClient
 private:
 	Connection * c = NULL;
 	User * user = NULL;
+	ContactList * pCL = NULL;
 public:
 	TestClient(int argc, char **argv);
 	~TestClient();

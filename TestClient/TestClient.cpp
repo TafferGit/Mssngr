@@ -15,6 +15,7 @@ TestClient::TestClient(int argc, char ** argv)
 	user = new User(c);
 	user->Register();
 	user->Login();
+	pCL = new ContactList(c);
 }
 
 TestClient::~TestClient()

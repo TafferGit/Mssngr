@@ -30,6 +30,9 @@
     <ClCompile Include="LoginForm.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
+    <ClCompile Include="ContactList.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Connection.h">
@@ -45,6 +48,9 @@
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
     <ClInclude Include="LoginForm.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="ContactList.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
   </ItemGroup>
