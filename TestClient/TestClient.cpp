@@ -32,6 +32,7 @@ TestClient::TestClient(int argc, char ** argv)
 		TestClient(argc, argv);
 	}
 	pCL = new ContactList(c);
+	delete pCL;
 }
 
 TestClient::~TestClient()

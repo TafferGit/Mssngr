@@ -41,6 +41,7 @@ private:
 	void ConnectionCleanUp();
 public:
 	int WaitForReceive(char *outRecvbuf);
+	int Connection::WaitForReceiveSafe(char *recvBuf);
 	int SendBuffer(char *sendBuffer);
 	Connection(int argc, char **argv);
 	~Connection();

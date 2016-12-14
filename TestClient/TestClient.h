@@ -14,6 +14,7 @@
 #include <thread>
 #include <iostream>
 #include <conio.h>
+#include <mutex>
 
 #include "Connection.h"
 #include "User.h"

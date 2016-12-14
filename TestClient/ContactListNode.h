@@ -3,6 +3,8 @@
 #include <vector>
 #include <iostream>
 #include <string>
+#include <conio.h>
+
 class ContactListNode
 {
 	std::string name;
@@ -11,7 +13,7 @@ class ContactListNode
 public:
 	ContactListNode();
 	~ContactListNode();
-	void ShowMessages();
+	void ShowMessages(Connection *c);
 	std::string GetName();
 	void SetName(std::string n);
 	void PushMessageToVec(std::string msg);

@@ -1,5 +1,7 @@
 #include "TestClient.h"
 
+std::mutex connectionMutex;
+
 Connection::Connection(int argc, char **argv)
 {
 	int result;
@@ -123,6 +125,11 @@ void Connection::WaitForReceive()
 int Connection::WaitForReceive(char * outRecvbuf)
 {
 	int iResult = recv(ConnectSocket, outRecvbuf, recvbuflen, 0);
+	return iResult;
+}
+
+int Connection::WaitForReceiveSafe(char *recvBuf) {
+	int iResult = recv(ConnectSocket, recvBuf, recvbuflen, 0);
 	return iResult;
 }
 

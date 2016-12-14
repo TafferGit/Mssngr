@@ -2,6 +2,8 @@
 
 #define NO_CONTACT_LIST_YET '1'
 
+std::mutex m;
+
 void ContactList::RequestContactsFromServer()
 {
 	char *outBuf = new char[DEFAULT_BUFLEN];
@@ -40,7 +42,7 @@ void ContactList::ShowContactsFromServer()
 {
 	system("cls");
 	int selected = 0; int chGet = 0;
-	char *sendBuf = new char[512];
+	char *sendBuf = new char[DEFAULT_BUFLEN];
 	for (size_t i = 0; i < requestedContactNames.size(); i++) {
 		printf("%d. %s\n", i, requestedContactNames.at(i).c_str());
 	}
@@ -75,7 +77,6 @@ void ContactList::ShowContactsFromServer()
 		sprintf(sendBuf, "<cladd>%s</>", requestedContactNames.at(selected).c_str());
 		pConnection->SendBuffer(sendBuf);
 	}
-	ShowContactList();
 }
 
 void ContactList::ParseCLFromServer(char * pInBuf, std::vector<ContactListNode>* pContactListVec) {
@@ -96,6 +97,38 @@ void ContactList::ParseCLFromServer(char * pInBuf, std::vector<ContactListNode>*
 			un_open++; un_close++;
 		}
 		else break;
+	}
+}
+
+void ContactList::ParseIncomingMessage(char * pInBuf)
+{
+	std::string bufString(pInBuf);
+	std::string parsedSenderName;
+	std::string parsedMessage;
+	size_t fu_open = 0;
+	size_t fu_close = 0;
+	size_t im_open = 0;
+	size_t im_close = 0;
+
+	while (fu_open != std::string::npos && fu_close != std::string::npos && im_open != std::string::npos && im_close != std::string::npos) {
+		int n = 0;
+		fu_open = bufString.find("<fu>", fu_open);
+		fu_close = bufString.find("</fu>", fu_close);
+		im_open = bufString.find("<im>", im_open);
+		im_close = bufString.find("</im>", im_close);
+		size_t senderNameStart = fu_open + 4;
+		size_t senderNameSize = fu_close - senderNameStart;
+		size_t messageStart = im_open + 4;
+		size_t messageSize = im_close - messageStart;
+		if (fu_open != std::string::npos && fu_close != std::string::npos && im_open != std::string::npos && im_close != std::string::npos) {
+			parsedSenderName = bufString.substr(senderNameStart, senderNameSize);
+			parsedMessage = bufString.substr(messageStart, messageSize);
+			while (this->contactListNodesVec.at(n).GetName() != parsedSenderName) {
+				n++;
+			}
+			this->contactListNodesVec.at(n).PushMessageToVec(parsedMessage);
+			++fu_open; ++fu_close; ++im_open; ++im_close;
+		}
 	}
 }
 
@@ -121,43 +154,92 @@ void ContactList::ParseContactsFromServer(char * pInBuf, std::vector<std::string
 	}
 }
 
-std::thread ContactList::Spawn()
-{
-	return std::thread(&ContactList::ReceiveMsg, this);
-}
-
 void ContactList::ShowContactList()
 {
-	int userInput = 0;
-	RequestContactListFromServer();
+	int userInput(0), selected(0);
 	system("cls");
 	for (size_t i = 0; i < contactListNodesVec.size(); i++) {
 		std::cout << i << ". " << contactListNodesVec.at(i).GetName() << std::endl;
 	}
+	printf("Selected: %d %s\n", selected, contactListNodesVec.at(selected).GetName().c_str());
 	printf("To add new contacts please press [A] button.\n");
-	userInput = _getch();
+	while (userInput != 27 && userInput != 13 && userInput != 'A' && userInput != 'a'){
+		userInput = _getch();
 
-	if (userInput == 'A' || userInput == 'a' || userInput == 'ô' || userInput == 'Ô') {
-		RequestContactsFromServer();
-		ShowContactsFromServer();
+		if (userInput == 72) {
+			if (selected > 0) {
+				--selected;
+				system("cls");
+				for (size_t i = 0; i < contactListNodesVec.size(); i++) {
+					std::cout << i << ". " << contactListNodesVec.at(i).GetName() << std::endl;
+				}
+				printf("Selected: %d %s\n", selected, contactListNodesVec.at(selected).GetName().c_str());
+				printf("To add new contacts please press [A] button.\n");
+			}
+		}
+
+		else if (userInput == 80) {
+			if (selected < contactListNodesVec.size() - 1) {
+				++selected;
+				system("cls");
+				for (size_t i = 0; i < contactListNodesVec.size(); i++) {
+					std::cout << i << ". " << contactListNodesVec.at(i).GetName() << std::endl;
+				}
+				printf("Selected: %d %s\n", selected, contactListNodesVec.at(selected).GetName().c_str());
+				printf("To add new contacts please press [A] button.\n");
+			}
+		}
+
+		else if (userInput == 'A' || userInput == 'a' || userInput == 'ô' || userInput == 'Ô') {
+			this->isReceivingActive = false;
+			RequestContactsFromServer();
+			ShowContactsFromServer();
+			RequestContactListFromServer();
+			ShowContactList();
+		}
+
+		else if (userInput == 13) {
+			this->contactListNodesVec.at(selected).ShowMessages(pConnection);
+			ShowContactList();
+		}
 	}
 }
 
 ContactList::ContactList(Connection *c)
 {
 	pConnection = c;
-	ShowContactList();
+	RequestContactListFromServer();
+	this->isReceivingActive = true;
+	SpawnThreads();
+}
+
+void ContactList::SpawnThreads() {
+	t1 = std::thread(&ContactList::ShowContactList, this);
+	t2 = std::thread(&ContactList::ReceiveMsg, this);
+	if (t1.joinable())
+		t1.join();
+	if (t2.joinable())
+		t2.join();
 }
 
 
 ContactList::~ContactList()
 {
+	pConnection = NULL;
 }
 
 void ContactList::ReceiveMsg()
 {
-	while (1) {
-		char recvBuf[DEFAULT_BUFLEN];
-		pConnection->WaitForReceive(recvBuf);
+	m.lock();
+	int iResult = 0;
+	while (this->isReceivingActive) {
+		char * recvBuf = new char[DEFAULT_BUFLEN];
+		iResult = pConnection->WaitForReceiveSafe(recvBuf);
+
+		if (recvBuf[0] == '<' && recvBuf[1] == 'f' && recvBuf[2] == 'u' && recvBuf[3] == '>') {
+			ParseIncomingMessage(recvBuf);
+		}
+		delete recvBuf;
 	}
+	m.unlock();
 }
