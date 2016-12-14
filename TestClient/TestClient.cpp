@@ -20,7 +20,7 @@ TestClient::TestClient(int argc, char ** argv)
 		user->Register();
 		user->Login();
 	}
-	if (usrChoice == 'l' || usrChoice == 'L') {
+	else if (usrChoice == 'l' || usrChoice == 'L') {
 		c = new Connection(argc, argv);
 		user = new User(c);
 		user->Login();

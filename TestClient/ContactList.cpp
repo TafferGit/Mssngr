@@ -32,6 +32,9 @@ void ContactList::RequestContactListFromServer()
 	if (recvBuf[0] == NO_CONTACT_LIST_YET) {
 		printf("You have no contacts!\n");
 		system("pause");
+		RequestContactsFromServer();
+		ShowContactsFromServer();
+		RequestContactListFromServer();
 	}
 	else {
 		ParseCLFromServer(recvBuf, &contactListNodesVec);
