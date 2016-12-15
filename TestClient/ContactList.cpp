@@ -257,8 +257,8 @@ void ContactList::ReceiveMsg()
 	int iResult = 0;
 	std::fstream logStream;
 	std::string logString;
+	char recvBuf[DEFAULT_BUFLEN];
 	while (this->isReceivingActive) {
-		char recvBuf[DEFAULT_BUFLEN];
 		iResult = pConnection->WaitForReceiveSafe(recvBuf);
 
 		if (recvBuf[0] == '<' && recvBuf[1] == 'f' && recvBuf[2] == 'u' && recvBuf[3] == '>') {
@@ -272,7 +272,7 @@ void ContactList::ReceiveMsg()
 
 			ParseIncomingMessage(recvBuf);
 		}
-		recvBuf[0] = '\0';
+		memset(recvBuf, 0, sizeof(recvBuf));
 	}
 	m.unlock();
 }
