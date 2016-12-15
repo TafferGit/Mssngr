@@ -119,7 +119,10 @@ void ContactList::ParseIncomingMessage(char * pInBuf)
 
 	logStream.open("client.log", std::ios::out | std::ios::app);
 	logStream << "Going to start parsing message!\n";
+	logStream.close();
 	while (fu_open != std::string::npos && fu_close != std::string::npos && im_open != std::string::npos && im_close != std::string::npos) {
+		logStream.open("client.log", std::ios::out | std::ios::app);
+		logStream << "Starting parsing!\n";
 		int n = 0;
 		fu_open = bufString.find("<fu>", fu_open);
 		fu_close = bufString.find("</fu>", fu_close);
