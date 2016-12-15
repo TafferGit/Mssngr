@@ -108,44 +108,46 @@ void ContactList::ParseIncomingMessage(char * pInBuf)
 	std::string bufString(pInBuf);
 	std::string parsedSenderName;
 	std::string parsedMessage;
+	std::string term_fu = "<fu>";
+	std::string term_fu_end = "</fu>";
+	std::string term_im = "<im>";
+	std::string term_im_end = "</im>";
 	//Temporary tracer vars
 	std::fstream logStream;
 	std::string logString;
 	//End temporary tracer vars
-	size_t fu_open = 0;
-	size_t fu_close = 0;
-	size_t im_open = 0;
-	size_t im_close = 0;
-	size_t endline = 0;
+	size_t fu_open_pos = 0;
+	size_t fu_close_pos = 0;
+	size_t im_open_pos = 0;
+	size_t im_close_pos = 0;
 
 	logStream.open("client.log", std::ios::out | std::ios::app);
 	logStream << "Going to start parsing message!\n";
 	logStream.close();
-	while (fu_open != std::string::npos && fu_close != std::string::npos && im_open != std::string::npos && im_close != std::string::npos && endline != std::string::npos) {
+	while (fu_open_pos != std::string::npos && fu_close_pos != std::string::npos && im_open_pos != std::string::npos && im_close_pos != std::string::npos) {
 		logStream.open("client.log", std::ios::out | std::ios::app);
 		logStream << "Starting parsing!\n";
 		int n = 0;
-		fu_open = bufString.find("<fu>", fu_open);
-		fu_close = bufString.find("</fu>", fu_close);
-		im_open = bufString.find("<im>", im_open);
-		im_close = bufString.find("</im>", im_close);
-		endline = bufString.find("\n", endline);
+		fu_open_pos = bufString.find(term_fu, fu_open_pos);
+		fu_close_pos = bufString.find(term_fu_end, fu_close_pos);
+		im_open_pos = bufString.find(term_im, im_open_pos);
+		im_close_pos = bufString.find(term_im_end, im_close_pos);
 
-		size_t senderNameStart = fu_open + 4;
-		size_t senderNameSize = fu_close - senderNameStart;
-		size_t messageStart = im_open + 4;
-		size_t messageSize = im_close - messageStart;
-		if (fu_open != std::string::npos && fu_close != std::string::npos && im_open != std::string::npos && im_close != std::string::npos && endline != std::string::npos) {
+		size_t senderNameStart = fu_open_pos + 4;
+		size_t senderNameSize = fu_close_pos - senderNameStart;
+		size_t messageStart = im_open_pos + 4;
+		size_t messageSize = im_close_pos - messageStart;
+		if (fu_open_pos != std::string::npos && fu_close_pos != std::string::npos && im_open_pos != std::string::npos && im_close_pos != std::string::npos) {
 			parsedSenderName = bufString.substr(senderNameStart, senderNameSize);
 			parsedMessage = bufString.substr(messageStart, messageSize);
 			while (this->contactListNodesVec.at(n).GetName() != parsedSenderName) {
 				n++;
 			}
 			this->contactListNodesVec.at(n).PushMessageToVec(parsedSenderName, parsedMessage);
-			fu_open = endline + 1; fu_close = endline + 1; im_open = endline + 1; im_close = endline + 1; endline++;
+			fu_open_pos += term_fu.length(); fu_close_pos += term_fu_end.length(); im_open_pos += term_im.length(); im_close_pos += term_im_end.length();
 			logStream << "Received buffer size " << bufString.size() << "\n";
-			logStream << "Fu start found: " << fu_open << " /fu " << fu_close << " Sender's name length " << senderNameSize << " sender name start " << senderNameStart << "\n";
-			logStream << "im start found: " << im_open << " /im " << im_close << " Message length " << messageSize << " Message start " << messageStart << "\n";
+			logStream << "Fu start found: " << fu_open_pos << " /fu " << fu_close_pos << " Sender's name length " << senderNameSize << " sender name start " << senderNameStart << "\n";
+			logStream << "im start found: " << im_open_pos << " /im " << im_close_pos << " Message length " << messageSize << " Message start " << messageStart << "\n";
 			logStream << "Sender \"" << parsedSenderName << "\" has been parsed\n";
 			logStream << "Message \"" << parsedMessage << "\" has been parsed\n";
 			logStream.close();
