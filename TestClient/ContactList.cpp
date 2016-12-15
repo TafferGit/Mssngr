@@ -116,11 +116,12 @@ void ContactList::ParseIncomingMessage(char * pInBuf)
 	size_t fu_close = 0;
 	size_t im_open = 0;
 	size_t im_close = 0;
+	size_t endline = 0;
 
 	logStream.open("client.log", std::ios::out | std::ios::app);
 	logStream << "Going to start parsing message!\n";
 	logStream.close();
-	while (fu_open != std::string::npos && fu_close != std::string::npos && im_open != std::string::npos && im_close != std::string::npos) {
+	while (fu_open != std::string::npos && fu_close != std::string::npos && im_open != std::string::npos && im_close != std::string::npos && endline != std::string::npos) {
 		logStream.open("client.log", std::ios::out | std::ios::app);
 		logStream << "Starting parsing!\n";
 		int n = 0;
@@ -128,18 +129,20 @@ void ContactList::ParseIncomingMessage(char * pInBuf)
 		fu_close = bufString.find("</fu>", fu_close);
 		im_open = bufString.find("<im>", im_open);
 		im_close = bufString.find("</im>", im_close);
+		endline = bufString.find("\n", endline);
+
 		size_t senderNameStart = fu_open + 4;
 		size_t senderNameSize = fu_close - senderNameStart;
 		size_t messageStart = im_open + 4;
 		size_t messageSize = im_close - messageStart;
-		if (fu_open != std::string::npos && fu_close != std::string::npos && im_open != std::string::npos && im_close != std::string::npos) {
+		if (fu_open != std::string::npos && fu_close != std::string::npos && im_open != std::string::npos && im_close != std::string::npos && endline != std::string::npos) {
 			parsedSenderName = bufString.substr(senderNameStart, senderNameSize);
 			parsedMessage = bufString.substr(messageStart, messageSize);
 			while (this->contactListNodesVec.at(n).GetName() != parsedSenderName) {
 				n++;
 			}
 			this->contactListNodesVec.at(n).PushMessageToVec(parsedSenderName, parsedMessage);
-			fu_open += 4; fu_close += 4; im_open += 4; ++im_close += 4;
+			fu_open = endline + 1; fu_close = endline + 1; im_open = endline + 1; im_close = endline + 1; endline++;
 			logStream << "Received buffer size " << bufString.size() << "\n";
 			logStream << "Fu start found: " << fu_open << " /fu " << fu_close << " Sender's name length " << senderNameSize << " sender name start " << senderNameStart << "\n";
 			logStream << "im start found: " << im_open << " /im " << im_close << " Message length " << messageSize << " Message start " << messageStart << "\n";
