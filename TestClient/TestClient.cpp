@@ -2,7 +2,6 @@
 
 int __cdecl main(int argc, char **argv)
 {
-	SetConsoleCP(866);
 	TestClient * tc = new TestClient(argc, argv);
 	system("pause");
 	return 0;
