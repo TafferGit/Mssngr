@@ -179,7 +179,7 @@ void LibEvent::on_message_receive(bufferevent *buf_ev, char * buf)
 
 	for (size_t i = 0; i < ud_vec.size(); i++) {
 		if (ud_vec.at(i).username == receiverUsername) {
-			evbuffer_add_printf(ud_vec.at(i).out_buf, "<fu>%s</fu><im>%s</im>", incUsername.c_str(), incMessage.c_str());
+			evbuffer_add_printf(ud_vec.at(i).out_buf, "<fu>%s</fu><im>%s</im>\n", incUsername.c_str(), incMessage.c_str());
 		}
 	}
 }
