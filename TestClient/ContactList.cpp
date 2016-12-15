@@ -258,12 +258,13 @@ void ContactList::ReceiveMsg()
 	std::fstream logStream;
 	std::string logString;
 	while (this->isReceivingActive) {
-		char * recvBuf = new char[DEFAULT_BUFLEN];
+		char recvBuf[DEFAULT_BUFLEN];
 		iResult = pConnection->WaitForReceiveSafe(recvBuf);
 
 		if (recvBuf[0] == '<' && recvBuf[1] == 'f' && recvBuf[2] == 'u' && recvBuf[3] == '>') {
 			logStream.open("client.log", std::ios::out | std::ios::app);
 			if (!logStream.fail()) {
+				logStream << "iResult: " << iResult << "\n";
 				logString = recvBuf;
 				logStream << "Received message: \"" << logString << "\" \n";
 				logStream.close();
@@ -271,7 +272,7 @@ void ContactList::ReceiveMsg()
 
 			ParseIncomingMessage(recvBuf);
 		}
-		delete recvBuf;
+		recvBuf[0] = '\0';
 	}
 	m.unlock();
 }
