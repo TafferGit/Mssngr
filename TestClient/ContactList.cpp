@@ -108,11 +108,17 @@ void ContactList::ParseIncomingMessage(char * pInBuf)
 	std::string bufString(pInBuf);
 	std::string parsedSenderName;
 	std::string parsedMessage;
+	//Temporary tracer vars
+	std::fstream logStream;
+	std::string logString;
+	//End temporary tracer vars
 	size_t fu_open = 0;
 	size_t fu_close = 0;
 	size_t im_open = 0;
 	size_t im_close = 0;
 
+	logStream.open("client.log", std::ios::out | std::ios::app);
+	logStream << "Going to start parsing message!\n";
 	while (fu_open != std::string::npos && fu_close != std::string::npos && im_open != std::string::npos && im_close != std::string::npos) {
 		int n = 0;
 		fu_open = bufString.find("<fu>", fu_open);
@@ -129,8 +135,9 @@ void ContactList::ParseIncomingMessage(char * pInBuf)
 			while (this->contactListNodesVec.at(n).GetName() != parsedSenderName) {
 				n++;
 			}
-			this->contactListNodesVec.at(n).PushMessageToVec(parsedMessage);
+			this->contactListNodesVec.at(n).PushMessageToVec(parsedSenderName, parsedMessage);
 			++fu_open; ++fu_close; ++im_open; ++im_close;
+			logStream << "Message \"" << parsedMessage << "\" has been parsed\n";
 		}
 	}
 }
@@ -235,11 +242,20 @@ void ContactList::ReceiveMsg()
 {
 	m.lock();
 	int iResult = 0;
+	std::fstream logStream;
+	std::string logString;
 	while (this->isReceivingActive) {
 		char * recvBuf = new char[DEFAULT_BUFLEN];
 		iResult = pConnection->WaitForReceiveSafe(recvBuf);
 
 		if (recvBuf[0] == '<' && recvBuf[1] == 'f' && recvBuf[2] == 'u' && recvBuf[3] == '>') {
+			logStream.open("client.log", std::ios::out | std::ios::app);
+			if (!logStream.fail()) {
+				logString = recvBuf;
+				logStream << "Received message: \"" << logString << "\" \n";
+				logStream.close();
+			}
+
 			ParseIncomingMessage(recvBuf);
 		}
 		delete recvBuf;

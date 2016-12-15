@@ -5,6 +5,8 @@
 #include <thread>
 #include <mutex>
 #include "ContactListNode.h"
+#include <iostream>
+#include <fstream>
 
 class ContactList
 {
