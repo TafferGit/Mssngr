@@ -139,7 +139,7 @@ void ContactList::ParseIncomingMessage(char * pInBuf)
 				n++;
 			}
 			this->contactListNodesVec.at(n).PushMessageToVec(parsedSenderName, parsedMessage);
-			++fu_open; ++fu_close; ++im_open; ++im_close;
+			fu_open += 4; fu_close += 4; im_open += 4; ++im_close += 4;
 			logStream << "Received buffer size " << bufString.size() << "\n";
 			logStream << "Fu start found: " << fu_open << " /fu " << fu_close << " Sender's name length " << senderNameSize << " sender name start " << senderNameStart << "\n";
 			logStream << "im start found: " << im_open << " /im " << im_close << " Message length " << messageSize << " Message start " << messageStart << "\n";
